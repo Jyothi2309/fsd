@@ -10,7 +10,13 @@ const port = process.env.PORT || 8080;
 app.use(express.json());
 
 // MongoDB connection
-const mongoUrl = process.env.MONGO_FULL_URI;
+const rawMongoUrl = process.env.MONGO_FULL_URI || process.env.MONGO_URI || "";
+const mongoUrl = rawMongoUrl.trim().replace(/^["']|["']$/g, "");
+
+if (!mongoUrl) {
+  console.error("❌ CRITICAL: Neither MONGO_FULL_URI nor MONGO_URI is set!");
+  process.exit(1);
+}
 
 try {
   await mongoose.connect(mongoUrl);
