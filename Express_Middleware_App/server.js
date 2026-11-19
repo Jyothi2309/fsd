@@ -5,7 +5,12 @@ import morgan from "morgan";
 
 
 const app = express();
-const port=6500;
+const port = process.env.PORT || 6500;
+
+// Root welcome route
+app.get("/", (req, res) => {
+  res.json({ message: "Express Middleware API is running successfully" });
+});
 //1.Apllication-level middleware
 //4.Third party
 app.use(cors());
