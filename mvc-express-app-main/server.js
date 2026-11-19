@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 import connectDB from "./config/db.js";
 import movieRoutes from "./routes/movieRoutes.js";
 
@@ -12,6 +13,17 @@ app.use(express.json());
 
 //establishing connection with mongodb
 connectDB(MONGO_URI);
+
+// Root health check endpoint
+app.get("/", (req, res) => {
+  const states = ["disconnected", "connected", "connecting", "disconnecting"];
+  const isConnected = mongoose.connection.readyState === 1;
+  res.status(isConnected ? 200 : 503).json({
+    message: "MVC Movies API",
+    status: isConnected ? "healthy" : "database_disconnected",
+    database: states[mongoose.connection.readyState] || "unknown",
+  });
+});
 
 app.use("/api/v1/movies", movieRoutes);
 
