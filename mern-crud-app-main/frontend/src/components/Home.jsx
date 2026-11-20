@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import Header from "./Header";
 import Post from "./Post";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 function Home() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     async function fetchPosts() {
-      const response = await fetch("http://localhost:3000/api/v1/posts");
+      const response = await fetch(`${API_URL}/api/v1/posts`);
       const data = await response.json();
-      setPosts(data.data);
+      setPosts(data.data || []);
     }
     fetchPosts();
   }, []);

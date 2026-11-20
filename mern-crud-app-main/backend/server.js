@@ -14,14 +14,19 @@ app.use(cors());
 app.use(morgan("dev"));
 
 const port = process.env.PORT || 3000;
-const mongoUri = process.env.MONGO_URI;
-const dbName = process.env.DB_NAME;
+const rawMongoUri = process.env.MONGO_URI || "";
+const mongoUri = rawMongoUri.trim().replace(/^["']|["']$/g, "");
+const dbName = process.env.DB_NAME || "mernBlogDB";
 
 // Connect to MongoDB
-mongoose
-  .connect(mongoUri, { dbName })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Failed to connect to MongoDB", err));
+if (mongoUri) {
+  mongoose
+    .connect(mongoUri, { dbName, serverSelectionTimeoutMS: 5000 })
+    .then(() => console.log("Connected to MongoDB"))
+    .catch((err) => console.error("Failed to connect to MongoDB", err));
+} else {
+  console.error("❌ CRITICAL: MONGO_URI is not set!");
+}
 
   // Define the Post schema and model
 const postSchema = new mongoose.Schema({
